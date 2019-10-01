@@ -1,12 +1,25 @@
 import requests, json
 from xml.etree import ElementTree
 from datetime import datetime
+from enum import Enum 
 
 from settings import *
 
-def query(keywords):
+class SortResults(Enum):
+    quality = ''
+    date = 'y'
+    relevance = 't'
+    popularity = 'v12m'
+
+class SearchField(Enum):
+	title = 'title:'
+	anywhere = ''
+
+def query(keywords, proximity=20):
+	query = '%s"%s"~%s' % (SearchField.anywhere.value, keywords, proximity)
+	
 	end_point = 'https://www.tripdatabase.com/search/xml'
-	data = {'criteria': keywords, 'key': TRIPWEB_KEY}
+	data = {'criteria': query, 'key': TRIPWEB_KEY, 'sort': SortResults.quality.value}
 	response = requests.get(end_point, data=data)
 	
 	results = []
@@ -88,10 +101,9 @@ def category_map(category_id):
 	return (label, weight)
 
 def test():
-	results = query("vaccines autism")
+	results = query("apricot cancer")
 	for result in results:
 		print result
-		print
 
 if __name__ == '__main__':
 	test()
