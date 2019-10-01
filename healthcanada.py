@@ -25,7 +25,7 @@ field (SearchField) - Field to search
 return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
 '''
 
-def query(keywords):
+def query(keywords, field=SearchField.title.value):
 	source = "Health Canada"
 	category_id = 18
 	category = EvidencePyramid().category_map(category_id)
@@ -35,7 +35,7 @@ def query(keywords):
 	keywords = " ".join(keywords)
 	base = 'https://www.canada.ca/en/sr/srb/sra.html'
 
-	end_point = "%s?_charset_=UTF-8&fqocct=%s&allq=%s" % (base, SearchField.title.value, keywords)
+	end_point = "%s?_charset_=UTF-8&fqocct=%s&allq=%s" % (base, field, keywords)
 	response = get(end_point)
 	
 	tree = html.fromstring(response.text)
