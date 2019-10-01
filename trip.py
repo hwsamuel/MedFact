@@ -3,9 +3,10 @@ from xml.etree import ElementTree
 from datetime import datetime
 from enum import Enum 
 
-from settings import *
 from article import *
 from pyramid import *
+
+TRIPWEB_KEY = ''
 
 '''
 Sorting options in Trip
