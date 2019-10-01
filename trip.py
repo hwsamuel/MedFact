@@ -85,6 +85,7 @@ sorter (SortResults)- Sort order
 return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
 '''
 def query(keywords, proximity=20, field=SearchField.anywhere.value, sorter=SortResults.quality.value):
+	keywords = " ".join(keywords)
 	query = '%s"%s"~%s' % (field, keywords, proximity)
 	
 	end_point = 'https://www.tripdatabase.com/search/xml'
@@ -122,7 +123,7 @@ def category_map(category_id):
 Unit tests
 '''
 def test():
-	results = query("apricot cancer")
+	results = query(["apricot", "cancer"])
 	for result in results:
 		print result.title, result.category, result.weight, result.source, result.year, result.url
 		print
