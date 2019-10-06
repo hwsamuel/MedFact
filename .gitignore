@@ -1,1 +1,6 @@
 *.pyc
+datasets/*.txt
+datasets/simplewiki-20150406-pages-articles/*.txt
+datasets/*.tsv
+datasets/*.bin
+models/*.model
