@@ -17,7 +17,7 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 
 ## Datasets
 
-For training the medical phrases identifier, you will need to download the following datasets into the `datasets` folder
+The following datasets are required in the `datasets` folder, and can be downloaded from [GDrive](https://drive.google.com/drive/folders/1LfIrmbMG-yyhaSM9wFGqCTDMLBF7ZSj9). Links to sources are provided for reference.
 
 - [Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group](http://nlp.cs.aueb.gr)
 - [Simple English Wikipedia (SEW)](http://pikes.fbk.eu/eval-sew.html)
