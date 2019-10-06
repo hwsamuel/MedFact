@@ -2,10 +2,10 @@ import warnings, nltk, numpy as np, glob, string, pickle
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 from gensim.models import KeyedVectors
+from gensim.summarization import keywords
 from sklearn.feature_extraction import stop_words
 from sklearn.linear_model import Perceptron
 from sklearn.model_selection import train_test_split
-from gensim.summarization import keywords
 
 MODEL_NAME = 'models/medclass.model'
 
@@ -113,7 +113,7 @@ def predict(sentence):
 
 """ Unit test for predict() """
 def test():
-	sentence = "n00bmaster69: Where can I find official documentation on difference between Salt Tablets and Table Salt. Several people online mention that Table Salt is just sodium and less of other minerals whereas Salt Tablets have sodium and more of other elements such as potassium. When I called a Pharmacist he said just the opposite. I have a cold or flu. He said Salt Tablets are just Sodium Chloride whereas Table Salt has sodium and other minerals. And when I asked why does Doctor prescribe Salt Tablets, the pharmacist said because it is harder to measure Table Salt, whereas Tablets are pre-portioned. Where to get official guidance on this?"
+	sentence = "Where can I find official documentation on difference between Salt Tablets and Table Salt. Several people online mention that Table Salt is just sodium and less of other minerals whereas Salt Tablets have sodium and more of other elements such as potassium. When I called a Pharmacist he said just the opposite. I have a cold or flu. He said Salt Tablets are just Sodium Chloride whereas Table Salt has sodium and other minerals. And when I asked why does Doctor prescribe Salt Tablets, the pharmacist said because it is harder to measure Table Salt, whereas Tablets are pre-portioned. Where to get official guidance on this?"
 	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 
 	for r in predict(sentence):
