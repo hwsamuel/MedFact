@@ -63,14 +63,14 @@ def query(keywords, proximity=20, field=SearchField.anywhere.value, sorter=SortR
 def ndcg():
 	keywords = ["autism", "vaccinations"] # Search query keywords
 	
-	# Inner function to compute NDCG at k
+	# Inner function to compute NDCG at k (code from https://gist.github.com/bwhite/3726239)
 	def ndcg_at_k(r, k, method=0):
 	    dcg_max = dcg_at_k(sorted(r, reverse=True), k, method)
 	    if not dcg_max:
 	        return 0.
 	    return dcg_at_k(r, k, method) / dcg_max
 
-    # Inner helper function to compute DCG at k
+    # Inner helper function to compute DCG at k (code from https://gist.github.com/bwhite/3726239)
 	def dcg_at_k(r, k, method=0):
 		r = np.asfarray(r)[:k]
 		if r.size:
