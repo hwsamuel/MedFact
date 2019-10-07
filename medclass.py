@@ -1,4 +1,4 @@
-import warnings, nltk, numpy as np, glob, string, pickle
+import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 from gensim.models import KeyedVectors
@@ -6,6 +6,11 @@ from gensim.summarization import keywords
 from sklearn.feature_extraction import stop_words
 from sklearn.linear_model import Perceptron
 from sklearn.model_selection import train_test_split
+from nltk import word_tokenize
+from glob import glob
+from string import punctuation
+from pickle import load, dump
+import numpy as np
 
 MODEL_NAME = 'models/medclass.model'
 
@@ -31,7 +36,7 @@ def chv():
 def sew():
 	terms = []
 	path = 'datasets/simplewiki-20150406-pages-articles/*.txt' # Source http://pikes.fbk.eu/eval-sew.html
-	files = glob.glob(path)
+	files = glob(path)
 	for file in files:
 		data = open(file, 'r')
 		for line in data:
@@ -66,8 +71,8 @@ sentence (str)	- Paragraph or sentence of text to tokenize
 return (list)	- List of tokens
 '''
 def tokenize(sentence):
-	tokens = nltk.word_tokenize(sentence)
-	tokens = [t1.lower() for t1 in tokens if t1 not in stop_words.ENGLISH_STOP_WORDS and t1 not in string.punctuation] # Remove punctuations & stop words using Glasgow stop words list
+	tokens = word_tokenize(sentence)
+	tokens = [t1.lower() for t1 in tokens if t1 not in stop_words.ENGLISH_STOP_WORDS and t1 not in punctuation] # Remove punctuations & stop words using Glasgow stop words list
 	return tokens
 
 '''
@@ -90,7 +95,7 @@ def train(cache = True):
 	nn = Perceptron(tol=1e-3, random_state=0)
 	nn.fit(X_train, y_train)
 	
-	if cache: pickle.dump(nn, open(MODEL_NAME, 'wb'))
+	if cache: dump(nn, open(MODEL_NAME, 'wb'))
 
 	return nn.score(X_test, y_test)
 
@@ -100,7 +105,7 @@ sentence (str)	- Sentence to predict labels for
 return (list)	- Pairs of token and label as a list
 '''
 def predict(sentence):
-	nn = pickle.load(open(MODEL_NAME, 'rb'))
+	nn = load(open(MODEL_NAME, 'rb'))
 	
 	tokens = tokenize(sentence)
 	encodings = encode(tokens)[0]
