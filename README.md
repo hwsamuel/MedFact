@@ -26,9 +26,11 @@ The following datasets are required in the `datasets` folder, and can be downloa
 
 ## Workflow
 
-1. For a given incoming text paragraph, identify incoming medical phrases using `predict()` from `medclass.py`
-2. Use the incoming medical phrases to query the TRIP database with `query()` and construct the facts corpus using the results via `tbd()` (both functions in `trip.py` )
-3. Compare the incoming medical phrases with the corpus phrases to compute veracity metrics via `tbd()` in `tbd.py`
+1. For a given incoming text paragraph, identify key phrases using `tbd()` from `medclass.py`
+2. From the set of key phrases, identify medical phrases using `predict()` from `medclass.py`
+3. Use the incoming medical phrases to query the TRIP database with `query()`
+4. Construct the facts corpus using the results via `tbd()` (both functions in `trip.py` )
+5. Compare the incoming medical phrases with the corpus phrases to compute veracity metrics via `tbd()` in `tbd.py`
 
 ## Additional Resources
 

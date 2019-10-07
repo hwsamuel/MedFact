@@ -14,6 +14,15 @@ import numpy as np
 
 MODEL_NAME = 'models/medclass.model'
 
+""" Tokenizes cached words list from Merriam-Webster Medical Dictionary's API https://www.dictionaryapi.com/products/api-medical-dictionary """
+def merriam_webster():
+	data = open('datasets/merriam_webster.txt', 'r')
+	terms = []
+	for line in data:
+		line = line.strip()
+		terms.append(line)
+	return terms
+
 """ Tokenizes the SNOMED CT International dataset flat file """
 def snomedct():
 	data = open('datasets/sct2_Description_Delta-en_INT_20190731.txt', 'r') # Source (requires UMLS account) https://www.nlm.nih.gov/healthit/snomedct/international.html
@@ -81,7 +90,7 @@ cache (bool)	- Specify whether to save trained model as Pickle file
 return (float)	- Trained model's accuracy score
 '''
 def train(cache = True):
-	d1 = snomedct() + chv()
+	d1 = snomedct() + chv() + merriam_webster()
 	d2 = sew()
 
 	X1, y1 = encode(d1, 1) # Medical
@@ -92,7 +101,7 @@ def train(cache = True):
 	
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=10)
 
-	nn = Perceptron(tol=1e-3, random_state=0)
+	nn = Perceptron(tol=1e-2, random_state=1)
 	nn.fit(X_train, y_train)
 	
 	if cache: dump(nn, open(MODEL_NAME, 'wb'))
@@ -118,7 +127,7 @@ def predict(sentence):
 
 """ Sanity test """
 def test():
-	sentence = "Where can I find official documentation on difference between Salt Tablets and Table Salt. Several people online mention that Table Salt is just sodium and less of other minerals whereas Salt Tablets have sodium and more of other elements such as potassium. When I called a Pharmacist he said just the opposite. I have a cold or flu. He said Salt Tablets are just Sodium Chloride whereas Table Salt has sodium and other minerals. And when I asked why does Doctor prescribe Salt Tablets, the pharmacist said because it is harder to measure Table Salt, whereas Tablets are pre-portioned. Where to get official guidance on this?"
+	sentence = 'When dealing with a misbehaving child, intentionally ignore a problem behavior instead of reacting or giving negative attention to the child'
 	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 
 	for r in predict(sentence):
