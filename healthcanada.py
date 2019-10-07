@@ -7,25 +7,36 @@ from datetime import datetime
 from article import *
 from pyramid import *
 
-'''
-Search field options in Trip
-'''
 class SearchField(Enum):
+	"""
+	Search field options
+
+	>>> SearchField.title.value
+	'title_t'
+	>>> SearchField.url.value
+	'url_t'
+	>>> SearchField.body.value
+	'body_t'
+	>>> SearchField.anywhere.value
+	''
+	"""
 	anywhere = ''
 	title = 'title_t'
 	url = 'url_t'
 	body = 'body_t'
 
-'''
-Queries the Health Canada search engine on specified query and fields
-
-keywords (list) 	- Python list of keywords
-field (SearchField) - Field to search
-
-return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
-'''
-
 def query(keywords, field=SearchField.title.value):
+	"""
+	Queries the Health Canada search engine on specified query and fields
+
+	keywords (list) 	- Python list of keywords
+	field (SearchField) - Field to search
+
+	return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
+
+	>>> len(query('apricot cancer'))
+	10
+	"""
 	source = "Health Canada"
 	category_id = 18
 	category = EvidencePyramid().category_map(category_id)
@@ -52,17 +63,13 @@ def query(keywords, field=SearchField.title.value):
 
 	return results
 
-'''
-Unit tests
-'''
+""" Sanity test """
 def test():
 	results = query(["apricot", "cancer"])
 	for result in results:
 		print result.title, result.category, result.weight, result.source, result.year, result.url
 		print
 
-'''
-Main execution point
-'''
 if __name__ == '__main__':
-	test()
+	import doctest
+	doctest.testmod()
