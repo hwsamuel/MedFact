@@ -46,6 +46,17 @@ def dale_chall_norm(grade):
 	elif grade >= 9.:
 		return grade+4
 
+def metrics(sentence):
+	fk = flesch_kincaid_grade(sentence)
+	gf = gunning_fog(sentence)
+	dc = dale_chall_readability_score(sentence)
+	
+	print sentence
+	print 'Flesch-Kincaid', fk, grade_label(round(fk))
+	print 'Gunning Fog', gf, grade_label(round(gf))
+	print 'Dale-Chall', dc, grade_label(round(dale_chall_norm(dc)))
+	print
+
 """ Sanity test """
 def test():
 	sentences = [
@@ -57,15 +68,7 @@ def test():
 	]
 
 	for sentence in sentences:
-		print sentence
-		fk = flesch_kincaid_grade(sentence)
-		gf = gunning_fog(sentence)
-		dc = dale_chall_readability_score(sentence)
-		
-		print 'Flesch-Kincaid', fk, grade_label(round(fk))
-		print 'Gunning Fog', gf, grade_label(round(gf))
-		print 'Dale-Chall', dc, grade_label(round(dale_chall_norm(dc)))
-		print
+		metrics(sentence)
 
 if __name__ == '__main__':
 	test()
