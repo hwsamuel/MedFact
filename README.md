@@ -26,20 +26,14 @@ The following datasets are required in the `datasets` folder, and can be downloa
 
 ## Workflow
 
-1. For a given incoming text paragraph, identify key phrases using `tbd()` from `medclass.py`
-2. From the set of key phrases, identify medical phrases using `predict()` from `medclass.py`
-3. Use the incoming medical phrases to query the TRIP database with `query()`
-4. Construct the facts corpus using the results via `tbd()` (both functions in `trip.py` )
-5. Compare the incoming medical phrases with the corpus phrases to compute veracity metrics via `tbd()` in `tbd.py`
-
-## Additional Resources
-
-- Optionally also query Health Canada's knowledge base using `query()` and `tbd()` in `healthcanada.py` to build the facts corpus
-- For websites, the workflow can be iteratively used to score each web page retrieved with web scraping
-- The readability of the text being processed can also be judged via `metrics()` in `readability.py`
+1. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
+2. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles. (Optional) Also query Health Canada's knowledge base using `query()` in `healthcanada.py`
+3. Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file
+4. Compare the incoming phrases with the corpus phrases to compute veracity metrics via `tbd()` in `tbd.py`
+5. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
 
 ## Road Map
 
-- RESTful API for calling MedFact via Python Flash application (hosted on Cybera)
-- Retraining & refactoring supervised learning pipelines including PubMed word embeddings, medical words classifier, and agreement classifier
-- Websites scraper for bulk mode website veracity ranking
+- [ ] RESTful API for calling MedFact via Python Flash application (hosted on Cybera)
+- [ ] Retraining & refactoring supervised learning pipelines including PubMed word embeddings, keyphrases/claims extractor, medical words classifier, and agreement classifier
+- [ ] Websites scraper for bulk mode website veracity ranking
