@@ -115,6 +115,7 @@ return (list)	- Pairs of token and label as a list
 '''
 def predict(sentence):
 	nn = load(open(MODEL_NAME, 'rb'))
+	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 	
 	tokens = tokenize(sentence)
 	encodings = encode(tokens)[0]
@@ -128,7 +129,6 @@ def predict(sentence):
 """ Sanity test """
 def test():
 	sentence = 'When dealing with a misbehaving child, intentionally ignore a problem behavior instead of reacting or giving negative attention to the child'
-	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 
 	for r in predict(sentence):
 		print r

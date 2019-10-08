@@ -34,7 +34,7 @@ sorter (SortResults)- Sort order
 
 return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
 '''
-def query(keywords, proximity=20, field=SearchField.anywhere.value, sorter=SortResults.quality.value):
+def query(keywords, proximity=10, field=SearchField.anywhere.value, sorter=SortResults.quality.value):
 	keywords = " ".join(keywords).lower()
 	query = '%s"%s"~%s' % (field, keywords, proximity)
 	
