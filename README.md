@@ -31,7 +31,7 @@ The following datasets are required in the `datasets` folder, and can be downloa
 1. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
 2. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles. (Optional) Also query Health Canada's knowledge base using `query()` in `healthcanada.py`
 3. Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file
-4. Compare the incoming phrases with the corpus phrases to compute veracity metrics via `tbd()` in `tbd.py`
+4. Compare the incoming phrases with the corpus phrases to compute veracity metrics via `tbd()` in `accordcnn.py`
 5. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
 
 ## Road Map
