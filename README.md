@@ -23,6 +23,8 @@ The following datasets are required in the `datasets` folder, and can be downloa
 - [Simple English Wikipedia (SEW)](http://pikes.fbk.eu/eval-sew.html)
 - [Consumer Health Vocabulary (CHV)](https://github.com/Planeshifter/node-chvocab)
 - [SNOMED CT International (requires UMLS account)](https://www.nlm.nih.gov/healthit/snomedct/international.html)
+- [Medical Sciences Stack Exchange (scraped via API)](https://api.stackexchange.com/docs/questions)
+- [Health Stack Exchange (outdated with inconsistencies)](https://archive.org/download/stackexchange)
 
 ## Workflow
 
