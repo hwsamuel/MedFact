@@ -3,4 +3,5 @@ datasets/*.txt
 datasets/simplewiki-20150406-pages-articles/*.txt
 datasets/*.tsv
 datasets/*.bin
+datasets/*_stackexchange/*
 models/*.model
