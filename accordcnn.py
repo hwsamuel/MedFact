@@ -1,14 +1,25 @@
+import warnings
+warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
+
+from gensim.models import KeyedVectors
+from sklearn.feature_extraction import stop_words
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
+from textblob import TextBlob
 from xml.dom import minidom
 from requests import get
 from json import loads
 from pickle import load, dump
 from time import sleep
+from random import shuffle
+import numpy as np, spacy
 
 MSSE_KEY = '' # Register for key on StackApps and use the public key https://stackapps.com
 MSSE_QUESTIONS = 'datasets/medsciences_stackexchange/posts_questions.pickle'
 MSSE_LINKED = 'datasets/medsciences_stackexchange/linked_questions.pickle'
+MSSE_UNLINKED = 'datasets/medsciences_stackexchange/unlinked_questions.pickle'
+MSSE_ENCODED = 'datasets/medsciences_stackexchange/encoded_questions.pickle'
+MODEL_NAME = 'models/accordcnn.model'
 MSSE_BASE = 'https://api.stackexchange.com/2.2/questions'
 
 """
@@ -70,12 +81,49 @@ def msse_linked(posts = None):
 """
 Get unrelated question pairs from Medical Science Stack Exchange dataset
 
-return (list)	- Pairs of question titles that are not related or duplicates (arbitrary)
+from_cache (bool)	- (Optional) Gets pairs from saved pickle file or recomputes
+size (int)			- (Optional) Size of data to return
+randomize (bool)		- (Optional) Randomizes the returned list
+
+return (list)		- Pairs of question titles that are not related or duplicates (arbitrary)
 """
-def msse_unlinked():
+def msse_unlinked(from_cache = True, size = 500, randomize = True):
+	if from_cache: 
+		all_unlinked = load(open(MSSE_UNLINKED, 'rb'))
+		
+		if randomize: shuffle(all_unlinked)
+		all_unlinked = all_unlinked[:size]	
+
+		return all_unlinked
+
 	questions = load(open(MSSE_QUESTIONS, 'rb'))
 	linked = load(open(MSSE_LINKED, 'rb'))
 
+	all_linked = {}
+	for link in linked:
+		all_linked[link[0]] = None
+		all_linked[link[1]] = None
+
+	unlinked = {}
+	for question in questions:
+		id = question['question_id']
+		if id in all_linked.keys(): continue
+		unlinked[id] = question['title']
+
+	all_unlinked = []
+	pairs = []
+	for question in unlinked.values():
+		if len(pairs) == 2:
+			all_unlinked.append(pairs)
+			pairs = []
+		pairs.append(question)
+	
+	dump(all_unlinked, open(MSSE_UNLINKED, 'wb'))
+
+	if randomize: shuffle(all_unlinked)
+	all_unlinked = all_unlinked[:size]	
+
+	return all_unlinked
 """
 Tokenizes Health Stack Exchange dataset https://archive.org/download/stackexchange
 NB - Many of the questions marked as duplicate in this dataset do not have the question title recorded and the live version also does not have the questions (probably deleted)
@@ -111,6 +159,81 @@ def hse():
 
 	return pairs
 
+''' 
+Encodes a given set of vectors using Word2vec embeddings trained on PubMed and also associates class label  
+
+tokens (str)		- Sentence to encode
+return (ndarray)	- Numpy array of embeddings and associated labels
+'''
+spacy_model = spacy.load('en_core_web_sm')
+encoder = KeyedVectors.load_word2vec_format('datasets/pubmed2018_w2v_200D.bin', binary=True) # Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group http://nlp.cs.aueb.gr
+
+def encode(sentence):
+	sentence = unicode(sentence.encode('punycode'))
+	clean_sentence = ''
+	for token in sentence.split():
+		token = token.lower()
+		if token in encoder.wv: clean_sentence += token + ' '
+
+	blob = TextBlob(sentence)
+	polarity = blob.sentiment.polarity
+	subjectivity = blob.sentiment.subjectivity
+
+	negations = len([tok for tok in spacy_model(sentence) if tok.dep_ == 'neg'])
+	
+	encoded = encoder.wv[clean_sentence.split()]
+	encoded = np.mean(encoded, axis=0)
+	encoded = np.append(encoded, [polarity, subjectivity, negations])
+	
+	return encoded
+
+"""
+Encodes data for feeding into MLP
+
+from_cache (bool)	- (Optional) If true, it returns previously saved cache of encoded data
+return (set)		- Pairs of encoded inputs and labels
+"""
+
+def msse(from_cache = True):
+	if from_cache: return load(open(MSSE_ENCODED, 'rb'))
+	
+	X = []
+	y = []
+
+	lnk = msse_linked()
+	for l in lnk:
+		X.append(encode(l[2] + ' ' + l[3]))
+		y.append(1)
+
+	ulnk = msse_unlinked()
+	for l in ulnk:
+		X.append(encode(l[0] + ' ' + l[1]))
+		y.append(0)
+
+	dump((X, y), open(MSSE_ENCODED, 'wb'))
+	return (X, y)
+
+"""
+Train shallow CNN using Medical Sciences Stack Exchange linked questions' titles 
+
+Original paper mentioned using ConText, but I could not replicate that because:
+- ConText requires Linux (tested on Ubunutu 16.04)
+- ConText needs GPU processing (currently do not have access to this, have put request to Cybera)
+- ConText has moved to v4, while I tested with v3 on my old laptop running Ubuntu (could not recover old code)
+
+cache (bool)	- Specify whether to save trained model as Pickle file
+return (float)	- Trained model's accuracy score
+"""
+def train(cache=True):
+	X, y = msse()
+	
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=10)
+
+	mlp = MLPClassifier(hidden_layer_sizes=(200,), max_iter=200, alpha=1e-4, solver='sgd', verbose=10, tol=1e-4, random_state=1, learning_rate_init=.1)
+	mlp.fit(X_train, y_train)
+
+	if cache: dump(mlp, open(MODEL_NAME, 'wb'))
+	return mlp.score(X_test, y_test)
+
 if __name__ == '__main__':
-	print "Total number of questions scraped", len(msse_questions())
-	print "Total number of linked questions", len(msse_linked())
+	print train()
