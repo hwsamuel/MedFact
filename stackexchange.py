@@ -111,9 +111,6 @@ def hse():
 
 	return pairs
 
-""" Train shallow MLP using Medical Sciences Stack Exchange linked questions' titles """
-def train():
-	print
-
 if __name__ == '__main__':
-	print
+	print "Total number of questions scraped", len(msse_questions())
+	print "Total number of linked questions", len(msse_linked())
