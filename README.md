@@ -28,11 +28,16 @@ The following datasets are required in the `datasets` folder, and can be downloa
 
 ## Workflow
 
-1. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
-2. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles. (Optional) Also query Health Canada's knowledge base using `query()` in `healthcanada.py`
-3. Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file
-4. Compare the incoming phrases with the corpus phrases to compute veracity metrics via `predict()` in `accordcnn.py`
-5. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
+1. This code is developed in Python 2.7 and tested on Anaconda 2 installed on Windows 10
+2. The related dependency libraries for this project can be installed via `pip install -r requirements.txt` (requirements file generated via `pipreqs . --savefile=requirements.txt`)
+3. Train the medical phrases classifier by running `train()` in `medclass.py` which will generate and persist the trained model
+4. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
+5. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles
+6. Optionally, also query Health Canada's knowledge base using `query()` in `healthcanada.py`
+7. ~~Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file~~
+8. Train the accord classifier via `train()` in `accordcnn.py`
+9. Compare the incoming medical phrases with the corpus medical phrases to compute veracity metrics via `predict()` in `accordcnn.py`
+10. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
 
 ## Road Map
 
