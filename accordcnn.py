@@ -216,11 +216,6 @@ def msse(from_cache = True):
 """
 Train shallow CNN using Medical Sciences Stack Exchange linked questions' titles 
 
-Original paper mentioned using ConText, but I could not replicate that because:
-- ConText requires Linux (tested on Ubunutu 16.04)
-- ConText needs GPU processing (currently do not have access to this, have put request to Cybera)
-- ConText has moved to v4, while I tested with v3 on my old laptop running Ubuntu (could not recover old code)
-
 cache (bool)	- Specify whether to save trained model as Pickle file
 return (float)	- Trained model's accuracy score
 """
@@ -235,5 +230,22 @@ def train(cache=True):
 	if cache: dump(mlp, open(MODEL_NAME, 'wb'))
 	return mlp.score(X_test, y_test)
 
+'''
+Predicts label for sentence pairs based on trained model loaded as a Pickle file
+sentence1 (str)	- First sentence to predict label for
+sentence2 (str)	- Second sentence to predict label for
+return (int)	- 0 if pairs disagree or 1 if pairs agree
+'''
+def predict(sentence1, sentence2):
+	mlp = load(open(MODEL_NAME, 'rb'))
+
+	encodings = encode(sentence1 + ' ' + sentence2).reshape(1, -1)
+	return mlp.predict(encodings)
+
+""" Sanity test """
+def test():
+	print predict('Is autism an autoimmune disease?', 'Can cannabidiol help on Autism Spectrum Disorder?')
+	print predict('Is autism an autoimmune disease?', "What is gerrymandering called if it's not the result of redrawing districts?")
+
 if __name__ == '__main__':
-	print train()
+	test()
