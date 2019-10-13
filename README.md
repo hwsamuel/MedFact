@@ -15,9 +15,13 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 }
 ```
 
-## Datasets
+## Prerequisites
 
-The following datasets are required in the `datasets` folder, and can be downloaded from [GDrive](https://drive.google.com/drive/folders/1LfIrmbMG-yyhaSM9wFGqCTDMLBF7ZSj9). Links to sources are provided for reference.
+- This code is developed in [Python 2.7.15](https://docs.python.org/2.7/) and tested on [Anaconda](https://www.anaconda.com/distribution/)
+- The related Python libraries for this project can be installed via `pip install -r requirements.txt` (file generated via `pipreqs --savepath=requirements.txt .`)
+- The datasets required in the `datasets` folder can be downloaded from [GDrive](https://drive.google.com/drive/folders/1LfIrmbMG-yyhaSM9wFGqCTDMLBF7ZSj9). 
+
+## Datasets
 
 - [Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group](http://nlp.cs.aueb.gr)
 - [Simple English Wikipedia (SEW)](http://pikes.fbk.eu/eval-sew.html)
@@ -28,19 +32,30 @@ The following datasets are required in the `datasets` folder, and can be downloa
 
 ## Workflow
 
-1. This code is developed in Python 2.7 and tested on Anaconda 2 installed on Windows 10
-2. The related dependency libraries for this project can be installed via `pip install -r requirements.txt` (requirements file generated via `pipreqs . --savefile=requirements.txt`)
-3. Train the medical phrases classifier by running `train()` in `medclass.py` which will generate and persist the trained model
-4. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
-5. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles
-6. Optionally, also query Health Canada's knowledge base using `query()` in `healthcanada.py`
-7. ~~Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file~~
-8. Train the accord classifier via `train()` in `accordcnn.py`
-9. Compare the incoming medical phrases with the corpus medical phrases to compute veracity metrics via `predict()` in `accordcnn.py`
-10. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
+**Step 1**
+- Train the medical phrases classifier by running `train()` in `medclass.py` which will generate and persist the trained model
+- For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
 
-## Road Map
+**Step 2**
+- Use the incoming medical phrases to query the TRIP database with `query()` to get related articles
+- Optionally, also query Health Canada's knowledge base using `query()` in `healthcanada.py`
+- TODO: Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file
 
-- RESTful API for calling MedFact via Python Flash application (hosted on Cybera)
-- Website pages crawler for bulk mode website veracity ranking
-- Retraining & refactoring supervised learning pipelines including PubMed word embeddings, keyphrases/claims extractor, medical words classifier, and agreement classifier
+**Step 3**
+- TODO
+
+**Step 4**
+- Train the accord/agreement classifier via `train()` in `accordcnn.py`
+- Compare the incoming medical phrases with the corpus medical phrases to compute veracity metrics via `predict()` in `accordcnn.py`
+
+**Step 5**
+- TODO
+- Readability of the text being processed can be quantified with `metrics()` in `readability.py`
+
+## RESTful API Usage
+
+- TODO: RESTful API for calling MedFact via Python Flash application (to be hosted on Cybera)
+
+## Bulk Mode
+
+- TODO: Website pages crawler for bulk mode website veracity ranking

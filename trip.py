@@ -7,10 +7,11 @@ from nltk import word_tokenize
 
 from article import *
 from pyramid import *
+from scraper import *
 
 import numpy as np
 
-TRIPWEB_KEY = ''
+TRIPWEB_KEY = 'hwsamuel@ualberta.ca'
 
 """ Sorting options in Trip """
 class SortResults(Enum):
@@ -55,8 +56,9 @@ def query(keywords, proximity=10, field=SearchField.anywhere.value, sorter=SortR
 		weight = category[1]
 		category = category[0]
 		year = datetime.strptime(date, '%a, %d %b %Y %H:%M:%S GMT').year
+		body = get_body(url)
 
-		results.append(Article(title, category, weight, source, year, url))
+		results.append(Article(title, body, category, weight, source, year, url))
 	return results
 
 """ NDCG arbitary tests to select best sorting method from TRIP results """
@@ -105,12 +107,12 @@ def ndcg():
 	print 'Date', ndcg_at_k(r3, 5)
 	print 'Popularity', ndcg_at_k(r4, 5)
 
-""" Sanity test """
-def test():
+""" Workflow example """
+def example():
 	results = query(["autism", "vaccinations"])
 	for result in results:
-		print result.title, result.category, result.weight, result.source, result.year, result.url
+		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
 		print
 
 if __name__ == '__main__':
-	test()
+	example()

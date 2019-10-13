@@ -6,6 +6,7 @@ from datetime import datetime
 
 from article import *
 from pyramid import *
+from scraper import *
 
 class SearchField(Enum):
 	"""
@@ -31,11 +32,14 @@ def query(keywords, field=SearchField.title.value):
 
 	keywords (list) 	- Python list of keywords
 	field (SearchField) - Field to search
-
 	return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
 
-	>>> len(query('apricot cancer'))
-	10
+	>>> results = query(['apricot', 'cancer'])
+	>>> [len(r.title) > 0 for r in results]
+	[True, True, True, True, True, True]
+	>>> results = query(['apricot', 'cancer'])
+	>>> len(results[0].body) > 0
+	True
 	"""
 	source = "Health Canada"
 	category_id = 18
@@ -43,7 +47,7 @@ def query(keywords, field=SearchField.title.value):
 	weight = category[1]
 	category = category[0]
 
-	keywords = " ".join(keywords)
+	keywords = " ".join(keywords).lower().strip()
 	base = 'https://www.canada.ca/en/sr/srb/sra.html'
 
 	end_point = "%s?_charset_=UTF-8&fqocct=%s&allq=%s" % (base, field, keywords)
@@ -58,18 +62,18 @@ def query(keywords, field=SearchField.title.value):
 		url = match.xpath(".//p/span[@class='text-success']/text()")[0].strip()
 		date = match.xpath(".//p[2]/text()")[0].strip()
 		year = datetime.strptime(date, '%b %d, %Y').year
+		body = get_body(url)
 
-		results.append(Article(title, category, weight, source, year, url))
-
+		results.append(Article(title, body, category, weight, source, year, url))
 	return results
 
-""" Sanity test """
-def test():
+""" Workflow example """
+def example():
 	results = query(["apricot", "cancer"])
 	for result in results:
-		print result.title, result.category, result.weight, result.source, result.year, result.url
+		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
 		print
 
 if __name__ == '__main__':
 	import doctest
-	doctest.testmod()
+	doctest.testmod() # To review doctest results, use python healthcanada.py -v
