@@ -2,7 +2,7 @@
 Represents articles returned from Trip search
 
 title (str)		- Title of article
-body (str)		- (Optional) Abstract/summary of article if available
+body (str)		- Abstract/summary of article if available
 category (str)	- Evidence category of title based on Trip's evidence pyramid https://blog.tripdatabase.com/2017/10/27/sources-searched-by-trip/\
 weight (int)	- Ranked arbitrary weight assigned to evidence category
 source (str)	- The name of the journal or website where the article is from
@@ -18,3 +18,17 @@ class Article():
 		self.source = source
 		self.year = year
 		self.url = url
+
+	def extract(query, articles):
+		"""
+		Extracts the relevant phrases to use for comparison with an incoming query for computing veracity
+
+		query (list)	- Query of keywords
+		articles (list)	- List of articles
+		return (list)	- List of phrases and sentences to use for veracity computation
+		"""
+		
+		# extract sentences from article body
+		# in each sentence, find the ones that have the most of keywords
+		return
+

@@ -32,30 +32,21 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 
 ## Workflow
 
-**Step 1**
-- Train the medical phrases classifier by running `train()` in `medclass.py` which will generate and persist the trained model
-- For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
-
-**Step 2**
-- Use the incoming medical phrases to query the TRIP database with `query()` to get related articles
-- Optionally, also query Health Canada's knowledge base using `query()` in `healthcanada.py`
-- TODO: Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `tbd()` in the relevant source file
-
-**Step 3**
-- TODO
-
-**Step 4**
-- Train the accord/agreement classifier via `train()` in `accordcnn.py`
-- Compare the incoming medical phrases with the corpus medical phrases to compute veracity metrics via `predict()` in `accordcnn.py`
-
-**Step 5**
-- TODO
-- Readability of the text being processed can be quantified with `metrics()` in `readability.py`
+1. Train the medical phrases classifier by running `train()` in `medclass.py` which will generate and persist the trained model
+2. For a given incoming text paragraph, identify key phrases and medical phrases using `predict()` from `medclass.py`
+3. Use the incoming medical phrases to query the TRIP database with `query()` to get related articles. Optionally, also query Health Canada's knowledge base using `query()` in `healthcanada.py`
+4. Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `extract()` in `article.py`
+5. Train the accord/agreement classifier via `train()` in `accordcnn.py`
+6. Compare the incoming medical phrases with the corpus medical phrases via `predict()` in `accordcnn.py`
+7. Calculate the veracity score via `veracity()` in `trust.py`
+8. Compute the confidence score via `confidence()` in `trust.py`
+9. Compute the triage label via `triage()` in `trust.py`
+10. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
 
 ## RESTful API Usage
 
-- TODO: RESTful API for calling MedFact via Python Flash application (to be hosted on Cybera)
+- TODO: RESTful API for calling MedFact via Python Flash application (to be hosted on Cybera) (endpoint?text=&url= in `api.py`)
 
 ## Bulk Mode
 
-- TODO: Website pages crawler for bulk mode website veracity ranking
+- TODO: Website pages crawler for bulk mode website veracity ranking (`bulk.py`)
