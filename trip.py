@@ -109,9 +109,11 @@ def ndcg():
 
 """ Workflow example """
 def example():
-	results = query(["autism", "vaccinations"])
+	keywords = ["autism", "vaccinations"]
+	results = query(keywords)
 	for result in results:
 		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
+		print result.extract(keywords)
 		print
 
 if __name__ == '__main__':

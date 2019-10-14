@@ -1,3 +1,7 @@
+from textblob import TextBlob
+from nltk import word_tokenize
+from string import punctuation
+
 '''
 Represents articles returned from Trip search
 
@@ -19,16 +23,24 @@ class Article():
 		self.year = year
 		self.url = url
 
-	def extract(query, articles):
+	def extract(self, keywords, threshold = 3):
 		"""
 		Extracts the relevant phrases to use for comparison with an incoming query for computing veracity
 
-		query (list)	- Query of keywords
-		articles (list)	- List of articles
+		keywords (list)	- Query of keywords
+		threshold (int)	- Returns the last-n sentences (-1 for all sentences)
 		return (list)	- List of phrases and sentences to use for veracity computation
 		"""
 		
-		# extract sentences from article body
-		# in each sentence, find the ones that have the most of keywords
-		return
+		sentences = TextBlob(self.body).sentences # Extract sentences from article body
+		relevant = []
+		for sentence in sentences:
+			sentence = str(sentence).lower().strip()
+			tokens = word_tokenize(sentence)
+			tokens = [t.lower() for t in tokens if t not in punctuation]
 
+			common = [value for value in keywords if value in tokens]
+			if len(common) > 0: relevant.append(' '.join(tokens))
+
+		if threshold == -1: return relevant
+		else: return relevant[-threshold:]
