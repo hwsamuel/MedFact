@@ -111,9 +111,10 @@ def train(cache = True):
 '''
 Predicts labels for dataset based on trained model loaded as a Pickle file (needs model saved first via train())
 sentence (str)	- Sentence to predict labels for
+medical (bool)	- If set to true, will return only tokens with medical label, otherwise will return all tokens with each label
 return (list)	- Pairs of token and label as a list
 '''
-def predict(sentence):
+def predict(sentence, medical=True):
 	nn = load(open(MODEL_NAME, 'rb'))
 	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 	
@@ -123,15 +124,15 @@ def predict(sentence):
 
 	results = []
 	for i in range(0, len(tokens)):
-		results.append((tokens[i], labels[i]))
+		if (medical and labels[i] == 1) or not medical: results.append((tokens[i], labels[i]))
 	return results
 
-""" Sanity test """
-def test():
+""" Workflow example """
+def example():
 	sentence = 'When dealing with a misbehaving child, intentionally ignore a problem behavior instead of reacting or giving negative attention to the child'
 
-	for r in predict(sentence):
+	for r in predict(sentence, medical=False):
 		print r
 	
 if __name__ == '__main__':
-	test()
+	example()
