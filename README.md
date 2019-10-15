@@ -38,21 +38,21 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 4. Extract the corpus phrases from the TRIP (and optionally Health Canada) articles with `extract()` in `article.py`
 5. Train the accord/agreement classifier via `train()` in `accordcnn.py`
 6. Compare the incoming medical phrases with the corpus medical phrases via `predict()` in `accordcnn.py`
-7. Calculate the veracity score via `veracity()` in `trust.py`
-8. Compute the confidence score via `confidence()` in `trust.py`
-9. Compute the triage label via `triage()` in `trust.py`
+7. Calculate the veracity score via `veracity()` in `medfact.py`
+8. Compute the confidence score via `confidence()` in `medfact.py`
+9. Compute the triage label via `triage()` in `medfact.py`
 10. Readability of the text being processed can be quantified with `metrics()` in `readability.py`
 
 ## Bulk Mode
 
 - The veracity of websites can be computed via the batch mode which samples pages on the given website using a web crawler
 - Pages to sample are arbitrarily selected from the site map, and the number of pages to sample can be configured for more coverage
-- To use bulk mode for a specific website, use `bulk()` in `trust.py`
+- To use bulk mode for a specific website, use `bulk()` in `medfact.py`
 
 ## RESTful API
 
 - The live [MedFact API](http://199.116.235.207) will be using IaaS hosting with [Cybera](http://www.cybera.ca)
-- To run the Flask web app locally, use the command `python trust.py api`
+- To run the Flask web app locally, use the command `python medfact.py api`
 - In your web browser, go to [http://127.0.0.1:5000/api/](http://127.0.0.1:5000/api/)
 - When using IaaS hosting, you can serve the Flask web app using [uWSGI](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04)
 - PaaS hosting configurations depend on the provider, but here is one for [Heroku](https://medium.com/the-andela-way/deploying-a-python-flask-app-to-heroku-41250bda27d0)

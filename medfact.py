@@ -8,7 +8,7 @@ import healthcanada
 import readability
 
 REGISTERED = {
-	"admin": "A98xC2qALFKD"
+	"admin": "A98xC2qALFKD" # Regenerate pair for live/production deployment
 }
 
 app = Flask(__name__)
