@@ -51,14 +51,14 @@ def metrics(sentence):
 	gf = gunning_fog(sentence)
 	dc = dale_chall_readability_score(sentence)
 	
-	print sentence
-	print 'Flesch-Kincaid', fk, grade_label(round(fk))
-	print 'Gunning Fog', gf, grade_label(round(gf))
-	print 'Dale-Chall', dc, grade_label(round(dale_chall_norm(dc)))
-	print
+	fk_label = grade_label(round(fk))
+	gf_label = grade_label(round(gf))
+	dc_label = grade_label(round(dale_chall_norm(dc)))
 
-""" Sanity test """
-def test():
+	return (fk, gf, dc, fk_label, gf_label, dc_label)
+
+""" Workflow example """
+def example():
 	sentences = [
 		"A lot of government-published studies show vaccines cause autism.",
 		"When dealing with a misbehaving child, intentionally ignore a problem behavior instead of reacting or giving negative attention to the child.",
@@ -68,7 +68,13 @@ def test():
 	]
 
 	for sentence in sentences:
-		metrics(sentence)
+		fk, gf, dc, fk_label, gf_label, dc_label = metrics(sentence)
+
+		print sentence
+		print 'Flesch-Kincaid', fk, fk_label
+		print 'Gunning Fog', gf, gf_label
+		print 'Dale-Chall', dc, dc_label
+		print
 
 if __name__ == '__main__':
-	test()
+	example()
