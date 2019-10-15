@@ -39,7 +39,7 @@ class Article():
 
 		keywords (list)		- Query of keywords
 		threshold (int)		- Controls number of sentences to return (-1 for all sentences)
-		sampler(Sampler) 	- Returns first-n, last-n, random-n or best-n number of sentences
+		sampler(Sampler) 	- Returns first-n, last-n, random-n or best-n number of sentences (heuristic)
 
 		return (list)		- List of phrases and sentences to use for veracity computation
 		"""
