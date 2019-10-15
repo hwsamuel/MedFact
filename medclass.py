@@ -116,7 +116,6 @@ return (list)	- Pairs of token and label as a list
 '''
 def predict(sentence, medical=True):
 	nn = load(open(MODEL_NAME, 'rb'))
-	sentence = keywords(sentence, words=10) # Use TextRank algorithm to choose top-n keywords
 	
 	tokens = tokenize(sentence)
 	encodings = encode(tokens)[0]
@@ -130,7 +129,8 @@ def predict(sentence, medical=True):
 """ Workflow example """
 def example():
 	sentence = 'When dealing with a misbehaving child, intentionally ignore a problem behavior instead of reacting or giving negative attention to the child'
-
+	sentence = keywords(sentence, words=5).replace('\n', ' ') # Use TextRank algorithm to choose top-n keywords
+	
 	for r in predict(sentence, medical=False):
 		print r
 	
