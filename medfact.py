@@ -25,10 +25,10 @@ auth = HTTPBasicAuth()
 @app.route('/api/', methods=['GET'])
 @auth.login_required
 def api():
-	missing_err = "Provide text to analyze via ?text="
+	missing_err = "Provide text to analyze via <b>?text=</b>"
 	if not request.args.get('text'): return missing_err
 	
-	sentence = request.args.get('text').strip()
+	sentence = request.args.get('text').strip().encode('utf-8')
 	if sentence == '': return missing_err
 	
 	v_score, c_score, t_label = compute(sentence)
@@ -46,9 +46,9 @@ def api():
 	
 	result += '\t{"Readability":\n'
 	result += '\t\t{\n'
-	result += '\t\t\t"Flesch-Kincaid": {"Score": '+str(fk)+', "Label": "'+fk_label+'"},\n'
-	result += '\t\t\t"Gunning Fog": {"Score": '+str(gf)+', "Label": "'+gf_label+'"},\n'
-	result += '\t\t\t"Dale-Chall": {"Score": '+str(dc)+', "Label": "'+dc_label+'"}\n'
+	result += '\t\t\t"Flesch-Kincaid": {"Score": '+str(fk)+', "Label": "'+str(fk_label)+'"},\n'
+	result += '\t\t\t"Gunning Fog": {"Score": '+str(gf)+', "Label": "'+str(gf_label)+'"},\n'
+	result += '\t\t\t"Dale-Chall": {"Score": '+str(dc)+', "Label": "'+str(dc_label)+'"}\n'
 	result += '\t\t}\n'
 	result += '\t}\n'
 	
