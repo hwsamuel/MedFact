@@ -51,8 +51,8 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 
 ## RESTful API
 
-- The live [MedFact API](http://199.116.235.207) will be using IaaS hosting with [Cybera](http://www.cybera.ca)
 - To run the Flask web app locally, use the command `python medfact.py api`
 - In your web browser, go to [http://127.0.0.1:5000/api/](http://127.0.0.1:5000/api/)
+- The live MedFact API will be using IaaS hosting with [Cybera](http://www.cybera.ca)
 - When using IaaS hosting, you can serve the Flask web app using [uWSGI](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-16-04)
 - PaaS hosting configurations depend on the provider, but here is one for [Heroku](https://medium.com/the-andela-way/deploying-a-python-flask-app-to-heroku-41250bda27d0)

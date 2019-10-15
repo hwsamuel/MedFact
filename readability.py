@@ -47,13 +47,13 @@ def dale_chall_norm(grade):
 		return grade+4
 
 def metrics(sentence):
-	fk = flesch_kincaid_grade(sentence)
-	gf = gunning_fog(sentence)
-	dc = dale_chall_readability_score(sentence)
+	fk = round(flesch_kincaid_grade(sentence), 3)
+	gf = round(gunning_fog(sentence), 3)
+	dc = round(dale_chall_readability_score(sentence), 3)
 	
-	fk_label = grade_label(round(fk))
-	gf_label = grade_label(round(gf))
-	dc_label = grade_label(round(dale_chall_norm(dc)))
+	fk_label = grade_label(fk)
+	gf_label = grade_label(gf)
+	dc_label = grade_label(dale_chall_norm(dc))
 
 	return (fk, gf, dc, fk_label, gf_label, dc_label)
 
