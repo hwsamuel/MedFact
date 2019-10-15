@@ -240,12 +240,12 @@ def predict(sentence1, sentence2):
 	mlp = load(open(MODEL_NAME, 'rb'))
 
 	encodings = encode(sentence1 + ' ' + sentence2).reshape(1, -1)
-	return mlp.predict(encodings)
+	return int(mlp.predict(encodings)[0])
 
-""" Sanity test """
-def test():
+""" Workflow example """
+def example():
 	print predict('Is autism an autoimmune disease?', 'Can cannabidiol help on Autism Spectrum Disorder?')
 	print predict('Is autism an autoimmune disease?', "What is gerrymandering called if it's not the result of redrawing districts?")
 
 if __name__ == '__main__':
-	test()
+	example()
