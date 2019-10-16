@@ -64,7 +64,8 @@ def query(keywords, field=SearchField.title.value):
 		title = match.xpath(".//h3/a/text()")[0].strip()
 		url = match.xpath(".//p/span[@class='text-success']/text()")[0].strip()
 		date = match.xpath(".//p[2]/text()")[0].strip()
-		year = datetime.strptime(date, '%b %d, %Y').year
+		if date == '' or date is None: year = ''
+		else: year = datetime.strptime(date, '%b %d, %Y').year
 		body = get_body(url)
 
 		results.append(Article(title, body, category, weight, source, year, url))
