@@ -45,7 +45,11 @@ def query(keywords, proximity=10, field=SearchField.anywhere.value, sorter=SortR
 	response = get(end_point, data=data)
 	
 	results = []
-	tree = ElementTree.fromstring(response.content)
+	try:
+		tree = ElementTree.fromstring(response.content)
+	except:
+		return results
+
 	for child in tree.findall('document'):
 		title = child.find('title').text.strip()
 		category_id = int(child.find('categoryid').text)

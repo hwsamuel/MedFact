@@ -53,10 +53,13 @@ def query(keywords, field=SearchField.title.value):
 	end_point = "%s?_charset_=UTF-8&fqocct=%s&allq=%s" % (base, field, keywords)
 	response = get(end_point)
 	
-	tree = html.fromstring(response.text)
-	matches = tree.xpath("//article")
-
 	results = []
+	try:
+		tree = html.fromstring(response.text)
+		matches = tree.xpath("//article")
+	except:
+		return results
+
 	for match in matches:
 		title = match.xpath(".//h3/a/text()")[0].strip()
 		url = match.xpath(".//p/span[@class='text-success']/text()")[0].strip()
