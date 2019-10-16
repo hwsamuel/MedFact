@@ -47,7 +47,7 @@ class Article():
 		sentences = TextBlob(self.body).sentences # Extract sentences from article body
 		relevant = {}
 		for sentence in sentences:
-			sentence = str(sentence).lower().strip()
+			sentence = str(sentence).decode('utf-8').lower().strip()
 			tokens = word_tokenize(sentence)
 			tokens = [t.lower() for t in tokens if t not in punctuation]
 
