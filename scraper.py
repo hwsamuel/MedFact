@@ -25,12 +25,15 @@ def get_body(url):
 	url (str)		- URL of article's full text
 	return (str)	- Full text of article
 	"""
-	html = urlopen(url)
-	bs = BeautifulSoup(html.read(), 'html.parser')
-	texts = bs.html.body.text
-	sections = TextBlob(texts).sentences
-	
 	readable = ''
+	html = urlopen(url)
+	try:
+		bs = BeautifulSoup(html.read(), 'lxml')
+		texts = bs.html.body.text
+	except:
+		return readable
+
+	sections = TextBlob(texts).sentences
 	for section in sections:
 		section = str(section).decode('utf-8').strip()
 		if check_spaces(section) and section[-1] == '.': readable += section + ' '
