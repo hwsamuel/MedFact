@@ -32,15 +32,16 @@ keywords (list) 	- Python list of keywords
 proximity (int) 	- Distance between keywords (PRO account on TRIP required)
 field (SearchField) - Field to search
 sorter (SortResults)- Sort order
+max (int)			- Number of articles to return
 
 return (Article)	- List of Article objects containing matches with title, evidence category, evidence weight, source, year published, and url
 '''
-def query(keywords, proximity=10, field=SearchField.anywhere.value, sorter=SortResults.quality.value):
+def query(keywords, proximity=10, field=SearchField.anywhere.value, sorter=SortResults.quality.value, max=10):
 	keywords = " ".join(keywords).lower()
 	query = '%s"%s"~%s' % (field, keywords, proximity)
 	
 	end_point = 'https://www.tripdatabase.com/search/xml'
-	data = {'criteria': query, 'key': TRIPWEB_KEY, 'sort': sorter}
+	data = {'criteria': query, 'key': TRIPWEB_KEY, 'sort': sorter, 'max': max}
 	response = get(end_point, data=data)
 	
 	results = []
@@ -109,7 +110,7 @@ def ndcg():
 
 """ Workflow example """
 def example():
-	keywords = ["autism", "vaccinations"]
+	keywords = ["vaccines", "cause", "autism"]
 	results = query(keywords)
 	for result in results:
 		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
