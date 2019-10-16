@@ -11,7 +11,7 @@ from scraper import *
 
 import numpy as np
 
-TRIPWEB_KEY = 'hwsamuel@ualberta.ca'
+TRIPWEB_KEY = ''
 
 """ Sorting options in Trip """
 class SortResults(Enum):
