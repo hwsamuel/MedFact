@@ -45,9 +45,9 @@ Please cite the following [publication](http://dx.doi.org/10.1007/978-3-319-8965
 
 ## Bulk Mode
 
-- The veracity of websites can be computed via the batch mode which samples pages on the given website using a web crawler
-- Pages to sample are arbitrarily selected from the site map, and the number of pages to sample can be configured for more coverage
-- To use bulk mode for a specific website, use `bulk()` in `medfact.py`
+- The veracity of websites can be computed via the batch mode which samples conteint on the given website's home page or other specified pages using a web scraper
+- An example is provided on using this mode in `medfact.py` as `example2()` (the RESTful API has a URL mode that provides bulk analysis)
+- The bulk mode is also useful when needing to analyse paragraphs of text which would contain multiple sentences
 
 ## RESTful API
 
