@@ -11,6 +11,8 @@ import readability
 import accordcnn
 import scraper
 
+BULK_THRESHOLD = 10 # Threshold for number of sentences to sample from website
+
 REGISTERED = {
 	"admin": "A98xC2qALFKD" # Regenerate pair for live/production deployment
 }
@@ -56,6 +58,8 @@ def api_url():
 	gf = 0
 	dc = 0
 	for sentence in sentences:
+		if count > BULK_THRESHOLD: break
+
 		sentence = str(sentence).decode('utf-8')
 		
 		medwords = medclass.predict(sentence, medical=True)
@@ -203,7 +207,7 @@ def example2():
 	c_score = 0
 	count = 0
 	for sentence in sentences:
-		if count > 10: break
+		if count > BULK_THRESHOLD: break
 
 		sentence = str(sentence).decode('utf-8')
 		medwords = medclass.predict(sentence, medical=True)
