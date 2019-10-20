@@ -90,7 +90,7 @@ def api_text():
 	v_score, c_score, t_label = compute(sentence)
 	fk, gf, dc, fk_label, gf_label, dc_label = readability.metrics(sentence)
 
-	return format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label)
+	return jsonify(format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label))
 
 @app.route('/api/url/', methods=['GET'])
 @auth.login_required
@@ -102,6 +102,20 @@ def api_url():
 	if address == '': return missing_err
 
 	text = scraper.get_body(address)
+	v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label = score_sentences(text)
+	return jsonify(format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label))
+
+@auth.get_password
+def get_pwd(username):
+	if username in REGISTERED: return REGISTERED.get(username)
+	else: return None
+
+"""
+Score corpus containing multiple sentences 
+text (str)		- Paragraph containing sentences
+return (json)	- Trust and readability scores
+"""
+def score_sentences(text):
 	sentences = TextBlob(text).sentences
 	v_score = 0
 	c_score = 0
@@ -133,16 +147,11 @@ def api_url():
 	c_score = round((c_score*1.)/count, 3)
 	t_label = triage(v_score, c_score)
 
-	fk_label = readability.grade_label(fk)
-	gf_label = readability.grade_label(gf)
-	dc_label = readability.grade_label(dc)
+	fk_label = readability.grade_label(round(fk))
+	gf_label = readability.grade_label(round(gf))
+	dc_label = readability.grade_label(round(dc))
 
-	return format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label)
-
-@auth.get_password
-def get_pwd(username):
-	if username in REGISTERED: return REGISTERED.get(username)
-	else: return None
+	return (v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label)
 
 """ Formats given inputs into a JSON object for API output """
 def format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label):
@@ -167,7 +176,7 @@ def format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_la
 	result['Readability']['Dale-Chall']['Score'] = dc
 	result['Readability']['Dale-Chall']['Label'] = dc_label
 
-	return jsonify(result)
+	return result
 	
 """
 Computes veracity score of a sentence using given related medical articles
