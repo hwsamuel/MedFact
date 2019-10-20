@@ -1,14 +1,11 @@
-import sys
-from flask import Flask, request, jsonify
+import sys, sqlite3, re
+from flask import Flask, flash, request, jsonify, render_template
 from flask_httpauth import HTTPBasicAuth
 from enum import Enum 
 from textblob import TextBlob
 
 import medclass
-import trip
-import healthcanada
 import readability
-import accordcnn
 import scraper
 
 BULK_THRESHOLD = 10 # Threshold for number of sentences to sample from website
@@ -17,14 +14,69 @@ REGISTERED = {
 	"admin": "A98xC2qALFKD" # Regenerate pair for live/production deployment
 }
 
-""" Label to assign based on veracity and confidence"""
+""" Label to assign based on veracity and confidence """
 class TriageLabel(Enum):
 	Trusted = "Trusted"
 	Unknown = "Unknown"
 	Untrusted = "Untrusted"
 
+""" Label for batch mode """
+class BatchMode(Enum):
+	Text = "text"
+	URL = "url"
+
 app = Flask(__name__)
 auth = HTTPBasicAuth()
+app.secret_key = 'YwycT897iWAr' # For session management, regenerate for live server
+
+@app.route('/api/gui/submit', methods=['POST'])
+@auth.login_required
+def submit():
+	mode = request.form.get('mode').strip()
+	content = request.form.get('content').strip()
+	email = request.form.get('email').strip()
+ 
+ 	err = False
+
+ 	if re.search('^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$', email) == None:
+ 		flash("Invalid email provided", 'danger')
+ 		err = True
+
+ 	if mode == BatchMode.Text.value:
+ 		text_size = len(content.split())
+ 		if text_size > 1000: 
+ 			flash("Text is too long", 'danger')
+ 			err = True
+ 		elif text_size < 3: 
+ 			flash("Text is too short", 'danger')
+ 			err = True
+	elif mode == BatchMode.URL.value:
+		num_urls = len(content.split('\n'))
+ 		valid_urls = content.count('http')
+		if num_urls > 100: 
+			flash("Too many URLs", 'danger')
+			err = True
+		elif num_urls < 1 or num_urls != valid_urls: 
+			flash("Not enough valid URLs have been entered", 'danger')
+			err = True
+	else:
+		flash("Invalid batch mode selected", 'danger')
+		err = True
+
+	if err == False:
+		db = sqlite3.connect('batch.sqlite')
+		cursor = db.cursor()
+		cursor.execute("INSERT INTO jobs (mode, content, email) VALUES (?,?,?)", (mode, content, email))
+		db.commit()
+		db.close()
+		flash('Submitted batch request successfully, results will be sent via email when processed', 'info')
+
+	return render_template('gui.html')
+
+@app.route('/api/gui/', methods=['GET'])
+@auth.login_required
+def gui():
+	return render_template('gui.html')
 
 @app.route('/api/text/', methods=['GET'])
 @auth.login_required
@@ -126,6 +178,10 @@ medwords (list)	- (Optional) List of pre-extracted medical words from sentence
 return (set)	- Veracity score, confidence, and TriageLabel of incoming sentence
 """
 def compute(sentence, medwords = None):
+	import accordcnn
+	import trip
+	import healthcanada
+
 	if medwords == None: medwords = medclass.predict(sentence, medical=True) # Identify medical keywords per sentence
 	
 	medwords = [m[0] for m in medwords] # Filter only the medical keywords, not the labels

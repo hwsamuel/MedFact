@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<head>
+	<title>MedFact</title>
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <style>
+    .navbar {
+      background: #444;
+    }
+    .navbar-brand {
+      font-weight: bold;
+    }
+    .navbar-brand span {
+      color: #FFF;
+    }
+    .navbar-nav span {
+      color: #FFF;
+    }
+    .active span {
+      font-weight: bold;
+      color: #FFA500;
+    }
+    td {
+      padding-bottom: 10px;
+    }
+  </style>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+</head>
+
+<body>
+  <div class="navbar navbar-inverse" role="navigation">
+  	<div class="container">
+      <div class="navbar-header">
+     		<a class="navbar-brand" href="{{ base_url }}/api/gui/"><span>MedFact</span></a>
+      </div>
+
+      <div class="navbar-right">
+        <ul class="nav navbar-nav">
+          <li><a href="{{ base_url }}/api/gui/"><span>Home</span></a></li>
+        </ul>
+      </div>
+    </div>
+	</div>
+	
+	<div class="container">
+		{% with flashes = get_flashed_messages(with_categories=true) %}
+  		{% if flashes %}
+  			{% for category, message in flashes %}
+    			<div class="alert alert-{{ category }}">
+    				<a href="#" class="close" data-dismiss="alert">&times;</a> {{ message }}
+    			</div>
+  			{% endfor %}
+			{% endif %}
+		{% endwith %}
+  
+    <div>{% block body %}{% endblock %}</div>
+
+    <hr>
+
+		<footer>
+      <table width="100%">
+      <tr>
+    		<td>
+          &copy; 2019 All Rights Reserved. This project is supported by the <b><a target="_blank" href="http://amii.ca">Alberta Machine Intelligence Institute Amii</a></b>. This demo is hosted by <a href="http://www.cybera.ca" target="_blank">Cybera</a>.
+        </td>
+        <td>
+          <a target="_blank" href="http://amii.ca"><img style="float: right; height: 50px; margin-top:-10px; " src="{{ url_for('static', filename='img/amii.png') }}" /></a>
+        </td>
+      </tr>
+      </table>
+  	</footer>
+	</div>  
+</body>

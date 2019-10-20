@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<script>
+function toggle()
+{
+	var urltip = document.getElementById("url-tip");
+	var texttip = document.getElementById("text-tip");
+	if (urltip.style.display == "none")
+	{
+		urltip.style.display = "block";
+		texttip.style.display = "none";
+	}
+	else
+	{
+		urltip.style.display = "none";
+		texttip.style.display = "block";
+	}
+}
+</script>
+<form method="POST" action="/api/gui/submit">
+<table>
+	<tr>
+		<td width="30%">Batch Mode</td>
+		<td width="70%">
+			<input type="radio" name="mode" onclick="toggle()" value="url" checked /> URLs
+			<input type="radio" name="mode" onclick="toggle()" value="text" /> Paragraphs
+		</td>
+	</tr>
+	<tr>
+		<td valign="top">
+			Input<br />
+			<small style="display: block;" id="url-tip">
+				One URL per line (begins with <code>http</code>)<br />
+				Max 100 URLs
+			</small>
+			<small style="display: none;" id="text-tip">
+				English words only<br />
+				Max 1000 words
+			</small>
+		</td>
+		<td><textarea required cols="70" rows="10" name="content"></textarea></td>
+	</tr>
+	<tr>
+		<td>Email</td>
+		<td><input required type="email" name="email" /></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<button type="submit">Submit</button>
+			<button type="reset">Clear</button>
+		</td>
+	</tr>
+</table>
+</form>
+
+{% endblock %}
