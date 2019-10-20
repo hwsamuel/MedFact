@@ -1,12 +1,17 @@
-import sys, sqlite3, re
+import sys, sqlite3, re, datetime
 from flask import Flask, flash, request, jsonify, render_template
 from flask_httpauth import HTTPBasicAuth
 from enum import Enum 
 from textblob import TextBlob
+from pickle import load, dump
 
 import medclass
 import readability
 import scraper
+
+import accordcnn
+import trip
+import healthcanada
 
 BULK_THRESHOLD = 10 # Threshold for number of sentences to sample from website
 
@@ -29,7 +34,14 @@ app = Flask(__name__)
 auth = HTTPBasicAuth()
 app.secret_key = 'YwycT897iWAr' # For session management, regenerate for live server
 
-@app.route('/api/gui/submit', methods=['POST'])
+""" Main page for web app """
+@app.route('/medfact/', methods=['GET'])
+@auth.login_required
+def home():
+	return render_template('gui.html')
+
+""" Page to process form submission """
+@app.route('/medfact/submit', methods=['POST'])
 @auth.login_required
 def submit():
 	mode = request.form.get('mode').strip()
@@ -44,7 +56,7 @@ def submit():
 
  	if mode == BatchMode.Text.value:
  		text_size = len(content.split())
- 		if text_size > 1000: 
+ 		if text_size > 100: 
  			flash("Text is too long", 'danger')
  			err = True
  		elif text_size < 3: 
@@ -53,7 +65,7 @@ def submit():
 	elif mode == BatchMode.URL.value:
 		num_urls = len(content.split('\n'))
  		valid_urls = content.count('http')
-		if num_urls > 100: 
+		if num_urls > 10: 
 			flash("Too many URLs", 'danger')
 			err = True
 		elif num_urls < 1 or num_urls != valid_urls: 
@@ -73,12 +85,8 @@ def submit():
 
 	return render_template('gui.html')
 
-@app.route('/api/gui/', methods=['GET'])
-@auth.login_required
-def gui():
-	return render_template('gui.html')
-
-@app.route('/api/text/', methods=['GET'])
+""" Text mode for API call """
+@app.route('/medfact/text/', methods=['GET'])
 @auth.login_required
 def api_text():
 	missing_err = "Provide text to analyze via <b>?text=</b>"
@@ -92,7 +100,8 @@ def api_text():
 
 	return jsonify(format_json(v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label))
 
-@app.route('/api/url/', methods=['GET'])
+""" URL mode for API call """
+@app.route('/medfact/url/', methods=['GET'])
 @auth.login_required
 def api_url():
 	missing_err = "Provide text to analyze via <b>?url=</b>"
@@ -123,33 +132,28 @@ def score_sentences(text):
 	fk = 0
 	gf = 0
 	dc = 0
+	fk, gf, dc, fk_label, gf_label, dc_label = readability.metrics(text)
+	nn = load(open(medclass.MODEL_NAME, 'rb'))
+	mlp = load(open(accordcnn.MODEL_NAME, 'rb'))
 	for sentence in sentences:
 		if count > BULK_THRESHOLD: break
 
 		sentence = str(sentence).decode('utf-8')
 		
-		medwords = medclass.predict(sentence, medical=True)
+		medwords = medclass.predict(sentence, model = nn, medical=True)
+		
 		if medwords == []: continue
 		
-		v, c, l = compute(sentence, medwords)
-		fk1, gf1, dc1, l1, l2, l3 = readability.metrics(sentence)
-
+		v, c, l = compute(sentence, medwords, mlp)
+		
 		if v == -1: continue
 		v_score += v
 		c_score += c
 		count += 1
-
-		fk += fk1
-		gf += gf1
-		dc += dc1
 	
 	v_score = round((v_score*1.)/count, 3)
 	c_score = round((c_score*1.)/count, 3)
 	t_label = triage(v_score, c_score)
-
-	fk_label = readability.grade_label(round(fk))
-	gf_label = readability.grade_label(round(gf))
-	dc_label = readability.grade_label(round(dc))
 
 	return (v_score, c_score, t_label, fk, gf, dc, fk_label, gf_label, dc_label)
 
@@ -184,13 +188,10 @@ For paragraphs with multiple sentences, split per sentence and aggregate score f
 
 sentence (str)	- Original incoming sentence to validate
 medwords (list)	- (Optional) List of pre-extracted medical words from sentence
+model (file)	- (Optional) Model for agreement checking
 return (set)	- Veracity score, confidence, and TriageLabel of incoming sentence
 """
-def compute(sentence, medwords = None):
-	import accordcnn
-	import trip
-	import healthcanada
-
+def compute(sentence, medwords = None, model = None):
 	if medwords == None: medwords = medclass.predict(sentence, medical=True) # Identify medical keywords per sentence
 	
 	medwords = [m[0] for m in medwords] # Filter only the medical keywords, not the labels
@@ -221,8 +222,8 @@ def compute(sentence, medwords = None):
 	
 	veracity = 0
 	for medsentence in medsentences:
-		veracity += accordcnn.predict(sentence, medsentence)
-	
+		veracity += accordcnn.predict(sentence, medsentence, model)
+		
 	if len(medsentences) > 0:
 		veracity = (veracity * 1.)/len(medsentences)
 	else:
@@ -271,14 +272,16 @@ def example2():
 	v_score = 0
 	c_score = 0
 	count = 0
+	nn = load(open(medclass.MODEL_NAME, 'rb'))
+	mlp = load(open(accordcnn.MODEL_NAME, 'rb'))
 	for sentence in sentences:
 		if count > BULK_THRESHOLD: break
 
 		sentence = str(sentence).decode('utf-8')
-		medwords = medclass.predict(sentence, medical=True)
+		medwords = medclass.predict(sentence, nn, medical=True)
 		if medwords == []: continue
 
-		v, c, l = compute(sentence.strip(), medwords)
+		v, c, l = compute(sentence.strip(), medwords=medwords, model=mlp)
 		if v == -1: continue
 
 		v_score += v
