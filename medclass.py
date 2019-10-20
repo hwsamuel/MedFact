@@ -59,9 +59,8 @@ tokens (list)	- List of tokens to encode
 label (int)		- (Optional) Label to associate with set of tokens (-1 reserved for unknown)
 return (set)	- List of embeddings and associated labels
 '''
+encoder = KeyedVectors.load_word2vec_format('datasets/pubmed2018_w2v_200D.bin', binary=True) # Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group http://nlp.cs.aueb.gr
 def encode(tokens, label=None):
-	encoder = KeyedVectors.load_word2vec_format('datasets/pubmed2018_w2v_200D.bin', binary=True) # Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group http://nlp.cs.aueb.gr
-
 	X = []
 	y = []
 	for token in tokens:
@@ -114,12 +113,12 @@ sentence (str)	- Sentence to predict labels for
 medical (bool)	- If set to true, will return only tokens with medical label, otherwise will return all tokens with each label
 return (list)	- Pairs of token and label as a list
 '''
-def predict(sentence, medical=True):
-	nn = load(open(MODEL_NAME, 'rb'))
+def predict(sentence, model = None, medical=True):
+	if model == None: model = load(open(MODEL_NAME, 'rb'))
 	
 	tokens = tokenize(sentence)
 	encodings = encode(tokens)[0]
-	labels = nn.predict(encodings)
+	labels = model.predict(encodings)
 
 	results = []
 	for i in range(0, len(tokens)):
