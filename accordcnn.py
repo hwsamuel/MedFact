@@ -234,13 +234,14 @@ def train(cache=True):
 Predicts label for sentence pairs based on trained model loaded as a Pickle file
 sentence1 (str)	- First sentence to predict label for
 sentence2 (str)	- Second sentence to predict label for
+model (file)	- (Optional) Model for agreement checking
 return (int)	- 0 if pairs disagree or 1 if pairs agree
 '''
-def predict(sentence1, sentence2):
-	mlp = load(open(MODEL_NAME, 'rb'))
+def predict(sentence1, sentence2, model = None):
+	if model == None: model = load(open(MODEL_NAME, 'rb'))
 
 	encodings = encode(sentence1 + ' ' + sentence2).reshape(1, -1)
-	return int(mlp.predict(encodings)[0])
+	return int(model.predict(encodings)[0])
 
 """ Workflow example """
 def example():
