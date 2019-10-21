@@ -36,5 +36,6 @@ def get_body(url):
 	sections = TextBlob(texts).sentences
 	for section in sections:
 		section = str(section).decode('utf-8').strip()
+		if len(section) == 0: continue
 		if check_spaces(section) and section[-1] == '.': readable += section + ' '
 	return readable
