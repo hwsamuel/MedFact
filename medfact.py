@@ -32,58 +32,6 @@ class BatchMode(Enum):
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
-app.secret_key = 'YwycT897iWAr' # For session management, regenerate for live server
-
-""" Main page for web app """
-@app.route('/medfact/', methods=['GET'])
-@auth.login_required
-def home():
-	return render_template('gui.html')
-
-""" Page to process form submission """
-@app.route('/medfact/submit', methods=['POST'])
-@auth.login_required
-def submit():
-	mode = request.form.get('mode').strip()
-	content = request.form.get('content').strip()
-	email = request.form.get('email').strip()
- 
- 	err = False
-
- 	if re.search('^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$', email) == None:
- 		flash("Invalid email provided", 'danger')
- 		err = True
-
- 	if mode == BatchMode.Text.value:
- 		text_size = len(content.split())
- 		if text_size > 100: 
- 			flash("Text is too long", 'danger')
- 			err = True
- 		elif text_size < 3: 
- 			flash("Text is too short", 'danger')
- 			err = True
-	elif mode == BatchMode.URL.value:
-		num_urls = len(content.split('\n'))
- 		valid_urls = content.count('http')
-		if num_urls > 10: 
-			flash("Too many URLs", 'danger')
-			err = True
-		elif num_urls < 1 or num_urls != valid_urls: 
-			flash("Not enough valid URLs have been entered", 'danger')
-			err = True
-	else:
-		flash("Invalid batch mode selected", 'danger')
-		err = True
-
-	if err == False:
-		db = sqlite3.connect('batch.sqlite')
-		cursor = db.cursor()
-		cursor.execute("INSERT INTO jobs (mode, content, email) VALUES (?,?,?)", (mode, content, email))
-		db.commit()
-		db.close()
-		flash('Submitted batch request successfully, results will be sent via email when processed', 'info')
-
-	return render_template('gui.html')
 
 """ Text mode for API call """
 @app.route('/medfact/text/', methods=['GET'])
