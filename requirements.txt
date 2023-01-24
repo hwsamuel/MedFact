@@ -1,4 +1,4 @@
-nltk==3.6.4
+nltk==3.6.6
 textblob==0.15.1
 lxml==4.9.1
 spacy==2.0.11
