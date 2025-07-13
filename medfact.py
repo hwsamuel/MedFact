@@ -207,43 +207,62 @@ def example1():
 	sentence = "A lot of government-published studies show vaccines cause autism"
 	v_score, c_score, t_label = compute(sentence)
 
-	print 'Veracity', v_score
-	print 'Confidence', c_score
-	print 'Triage', t_label
+	print('Veracity', v_score)
+	print('Confidence', c_score)
+	print('Triage', t_label)
 
 """ Example for bulk analysis of website's home page """
 def example2():
-	address = 'https://thetruthaboutcancer.com/apricot-kernels-for-cancer/'
-	text = scraper.get_body(address)
-	sentences = TextBlob(text).sentences
+	try:
+		address = 'https://thetruthaboutcancer.com/apricot-kernels-for-cancer/'
+		text = scraper.get_body(address)
+		sentences = TextBlob(text).sentences
 
-	v_score = 0
-	c_score = 0
-	count = 0
-	nn = load(open(medclass.MODEL_NAME, 'rb'))
-	mlp = load(open(accordcnn.MODEL_NAME, 'rb'))
-	for sentence in sentences:
-		if count > BULK_THRESHOLD: break
+		v_score = 0
+		c_score = 0
+		count = 0
+		
+		# Try to load models, skip if not available
+		try:
+			nn = load(open(medclass.MODEL_NAME, 'rb'))
+			mlp = load(open(accordcnn.MODEL_NAME, 'rb'))
+		except FileNotFoundError:
+			print("Warning: Pre-trained models not found. Please train models first.")
+			return
+			
+		for sentence in sentences:
+			if count > BULK_THRESHOLD: break
 
-		sentence = str(sentence).decode('utf-8')
-		medwords = medclass.predict(sentence, nn, medical=True)
-		if medwords == []: continue
+			sentence = str(sentence)  # Remove decode for Python 3
+			medwords = medclass.predict(sentence, nn, medical=True)
+			if medwords == []: continue
 
-		v, c, l = compute(sentence.strip(), medwords=medwords, model=mlp)
-		if v == -1: continue
+			v, c, l = compute(sentence.strip(), medwords=medwords, model=mlp)
+			if v == -1: continue
 
-		v_score += v
-		c_score += c
-		count += 1
-	
-	v_score = round((v_score*1.)/count, 3)
-	c_score = round((c_score*1.)/count, 3)
-	t_label = triage(v_score, c_score)
-
-	print v_score, c_score, t_label
+			v_score += v
+			c_score += c
+			count += 1
+		
+		if count > 0:
+			v_score = round((v_score*1.)/count, 3)
+			c_score = round((c_score*1.)/count, 3)
+			t_label = triage(v_score, c_score)
+			print(v_score, c_score, t_label)
+		else:
+			print("No medical sentences found for analysis.")
+	except Exception as e:
+		print(f"Error in example2: {e}")
+		print("This is expected if models or datasets are not available.")
 
 if __name__ == "__main__":
 	if len(sys.argv) == 2 and sys.argv[1].strip() == 'api':
 		app.run(host='0.0.0.0',debug=False,threaded=True) # Serve RESTful API
-	else:
+	elif len(sys.argv) == 2 and sys.argv[1].strip() == 'example':
 		example2()
+	else:
+		print("MedFact - Medical Fact Verification System")
+		print("Usage:")
+		print("  python medfact.py api     - Start REST API server")
+		print("  python medfact.py example - Run example analysis")
+		print("  python medfact.py         - Show this help")

@@ -1,4 +1,4 @@
-from urllib import urlopen
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from textblob import TextBlob
 from re import findall
@@ -12,7 +12,7 @@ def check_spaces(sentence, tolerance=2):
 	tolerance (int)		- (Optional) Number of spaces within normal sentences
 	return (bool)		- True if sentence does not exceed tolerant number of spaces else False
 	"""
-	tokens = findall('\s+', sentence)
+	tokens = findall(r'\s+', sentence)
 	for i in range(0, len(tokens)):
 		if len(tokens[i]) > tolerance: return False
 	return True
@@ -35,7 +35,7 @@ def get_body(url):
 
 	sections = TextBlob(texts).sentences
 	for section in sections:
-		section = str(section).decode('utf-8').strip()
+		section = str(section).strip()
 		if len(section) == 0: continue
 		if check_spaces(section) and section[-1] == '.': readable += section + ' '
 	return readable
