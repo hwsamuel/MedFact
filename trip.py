@@ -107,19 +107,19 @@ def ndcg():
 	r4 = scores(query(keywords, field=SearchField.anywhere.value, sorter=SortResults.popularity.value))
 
 	# Prints results for comparison
-	print 'Quality', ndcg_at_k(r1, 5)
-	print 'Relevance', ndcg_at_k(r2, 5)
-	print 'Date', ndcg_at_k(r3, 5)
-	print 'Popularity', ndcg_at_k(r4, 5)
+	print('Quality', ndcg_at_k(r1, 5))
+	print('Relevance', ndcg_at_k(r2, 5))
+	print('Date', ndcg_at_k(r3, 5))
+	print('Popularity', ndcg_at_k(r4, 5))
 
 """ Workflow example """
 def example():
 	keywords = ["vaccines", "cause", "autism"]
 	results = query(keywords)
 	for result in results:
-		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
-		print result.extract(keywords)
-		print
+		print(result.title, result.body, result.category, result.weight, result.source, result.year, result.url)
+		print(result.extract(keywords))
+		print()
 
 if __name__ == '__main__':
 	example()

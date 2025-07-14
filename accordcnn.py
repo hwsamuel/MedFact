@@ -2,7 +2,7 @@ import warnings
 warnings.filterwarnings(action='ignore', category=UserWarning, module='gensim')
 
 from gensim.models import KeyedVectors
-from sklearn.feature_extraction import stop_words
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from textblob import TextBlob
@@ -166,14 +166,25 @@ tokens (str)		- Sentence to encode
 return (ndarray)	- Numpy array of embeddings and associated labels
 '''
 spacy_model = spacy.load('en_core_web_sm')
-encoder = KeyedVectors.load_word2vec_format('datasets/pubmed2018_w2v_200D.bin', binary=True) # Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group http://nlp.cs.aueb.gr
+# Try to load word2vec embeddings, set to None if not available
+try:
+    encoder = KeyedVectors.load_word2vec_format('datasets/pubmed2018_w2v_200D.bin', binary=True) # Word2vec embeddings embeddings pre-trained on text from MEDLINE/PubMed Baseline 2018 by AUEB's NLP group http://nlp.cs.aueb.gr
+except FileNotFoundError:
+    print("Warning: Word2vec embeddings file not found in accordcnn.py. Some functionality may be limited.")
+    encoder = None
 
 def encode(sentence):
-	sentence = unicode(sentence.encode('punycode'))
+	# Handle encoding for Python 3
+	if isinstance(sentence, str):
+		sentence = sentence.encode('punycode').decode('ascii')
+	
 	clean_sentence = ''
-	for token in sentence.split():
-		token = token.lower()
-		if token in encoder.wv: clean_sentence += token + ' '
+	if encoder is not None:
+		for token in sentence.split():
+			token = token.lower()
+			if token in encoder.wv: clean_sentence += token + ' '
+	else:
+		clean_sentence = sentence.lower()
 
 	blob = TextBlob(sentence)
 	polarity = blob.sentiment.polarity
@@ -181,8 +192,12 @@ def encode(sentence):
 
 	negations = len([tok for tok in spacy_model(sentence) if tok.dep_ == 'neg'])
 	
-	encoded = encoder.wv[clean_sentence.split()]
-	encoded = np.mean(encoded, axis=0)
+	if encoder is not None and clean_sentence.strip():
+		encoded = encoder.wv[clean_sentence.split()]
+		encoded = np.mean(encoded, axis=0)
+	else:
+		# Return dummy embedding if encoder is not available
+		encoded = np.zeros(200)
 	encoded = np.append(encoded, [polarity, subjectivity, negations])
 	
 	return encoded
@@ -245,8 +260,8 @@ def predict(sentence1, sentence2, model = None):
 
 """ Workflow example """
 def example():
-	print predict('Is autism an autoimmune disease?', 'Can cannabidiol help on Autism Spectrum Disorder?')
-	print predict('Is autism an autoimmune disease?', "What is gerrymandering called if it's not the result of redrawing districts?")
+	print(predict('Is autism an autoimmune disease?', 'Can cannabidiol help on Autism Spectrum Disorder?'))
+	print(predict('Is autism an autoimmune disease?', "What is gerrymandering called if it's not the result of redrawing districts?"))
 
 if __name__ == '__main__':
 	example()

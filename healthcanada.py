@@ -76,9 +76,9 @@ def example():
 	keywords = ["apricot", "cancer"]
 	results = query(keywords)
 	for result in results:
-		print result.title, result.body, result.category, result.weight, result.source, result.year, result.url
-		print result.extract(keywords)
-		print
+		print(result.title, result.body, result.category, result.weight, result.source, result.year, result.url)
+		print(result.extract(keywords))
+		print()
 
 if __name__ == '__main__':
 	import doctest

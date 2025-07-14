@@ -70,11 +70,11 @@ def example():
 	for sentence in sentences:
 		fk, gf, dc, fk_label, gf_label, dc_label = metrics(sentence)
 
-		print sentence
-		print 'Flesch-Kincaid', fk, fk_label
-		print 'Gunning Fog', gf, gf_label
-		print 'Dale-Chall', dc, dc_label
-		print
+		print(sentence)
+		print('Flesch-Kincaid', fk, fk_label)
+		print('Gunning Fog', gf, gf_label)
+		print('Dale-Chall', dc, dc_label)
+		print()
 
 if __name__ == '__main__':
 	example()
